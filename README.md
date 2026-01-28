@@ -77,8 +77,8 @@ Use:
 - `+39, 0039, 39`
 
 This helps matching:
-- phonebook entries stored as `+393489963985`
-- call monitor events showing `3489963985`
+- phonebook entries stored as `+39XXXXXXXXXX`
+- call monitor events showing `XXXXXXXXXX`
 - or other national/international formats
 
 ---
