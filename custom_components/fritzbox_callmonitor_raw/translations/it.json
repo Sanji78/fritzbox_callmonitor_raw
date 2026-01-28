@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "FRITZ!Box CallMonitor (Raw + TR-064)",
+        "description": "Connette al CallMonitor del FRITZ!Box (TCP/1012) e, opzionalmente, risolve i nomi tramite rubrica TR-064.",
+        "data": {
+          "host": "Host",
+          "callmonitor_port": "Porta CallMonitor",
+          "tr064_port": "Porta TR-064",
+          "username": "Nome utente",
+          "password": "Password",
+          "phonebook_id": "ID rubrica",
+          "prefixes": "Prefissi (separati da virgola)",
+          "name": "Nome"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "call_state": {
+        "name": "Stato chiamata",
+        "state": {
+          "idle": "Inattivo",
+          "ringing": "Squilla",
+          "dialing": "Composizione",
+          "talking": "In conversazione"
+        }
+      }
+    }
+  }
+}
