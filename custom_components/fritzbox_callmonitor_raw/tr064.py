@@ -275,15 +275,22 @@ class FritzTr064Phonebook:
     async def lookup(self, number: str) -> Contact | None:
         """Resolve a number to a contact (with optional prefix attempts)."""
         n = normalize_number(number)
-        async with self._lock:
-            if n in self._number_map:
-                return self._number_map[n]
+        
+        # ✅ Add timeout to prevent lock starvation
+        try:
+            async with asyncio.timeout(2):
+                async with self._lock:
+                    if n in self._number_map:
+                        return self._number_map[n]
 
-            # Try prefixes like in the built-in integration
-            for p in self._prefixes:
-                if (p + n) in self._number_map:
-                    return self._number_map[p + n]
-                nn = n.lstrip("0")
-                if (p + nn) in self._number_map:
-                    return self._number_map[p + nn]
+                    # Try prefixes like in the built-in integration
+                    for p in self._prefixes:
+                        if (p + n) in self._number_map:
+                            return self._number_map[p + n]
+                        nn = n.lstrip("0")
+                        if (p + nn) in self._number_map:
+                            return self._number_map[p + nn]
+        except asyncio.TimeoutError:
+            _LOGGER.warning("Phonebook lookup timed out for %s", number)
+            
         return None

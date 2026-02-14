@@ -128,7 +128,12 @@ class FritzRawCallSensor(SensorEntity):
         import aiohttp  # local import to keep requirements empty
 
         session = aiohttp.ClientSession()
-        self.async_on_remove(session.close)
+        
+        # ✅ FIX #3: Properly close async session
+        async def _close_session():
+            await session.close()
+        
+        self.async_on_remove(_close_session)
 
         tr064_port = self._entry.options.get(
             CONF_TR064_PORT, self._entry.data[CONF_TR064_PORT]
@@ -175,7 +180,7 @@ class FritzRawCallSensor(SensorEntity):
 
     async def async_will_remove_from_hass(self) -> None:
         await self._client.stop()
-
+        
     async def _ha_stop(self, _event) -> None:
         await self._client.stop()
 
@@ -259,23 +264,39 @@ class FritzRawCallSensor(SensorEntity):
         if self._phonebook is None:
             return
 
-        async def _do() -> None:
-            try:
+        # ✅ CRITICAL FIX: Use hass.async_create_task, not asyncio.create_task
+        self.hass.async_create_task(
+            self._resolve_and_update(from_number, to_number, with_number),
+            f"fritzbox_resolve_{from_number or to_number or with_number}"
+        )
+
+    async def _resolve_and_update(
+        self,
+        from_number: str | None,
+        to_number: str | None,
+        with_number: str | None,
+    ) -> None:
+        """Resolve names with timeout protection."""
+        try:
+            async with asyncio.timeout(5):
                 if from_number:
                     c = await self._phonebook.lookup(from_number)
                     if c:
                         self._attrs[ATTR_FROM_NAME] = c.name
+                
                 if to_number:
                     c = await self._phonebook.lookup(to_number)
                     if c:
                         self._attrs[ATTR_TO_NAME] = c.name
+                
                 if with_number:
                     c = await self._phonebook.lookup(with_number)
                     if c:
                         self._attrs[ATTR_WITH_NAME] = c.name
 
                 self.async_write_ha_state()
-            except Exception as err:  # noqa: BLE001
-                _LOGGER.debug("Name resolution failed: %s", err)
 
-        asyncio.create_task(_do())
+        except asyncio.TimeoutError:
+            _LOGGER.warning("Name lookup timed out")
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.debug("Name resolution failed: %s", err)
