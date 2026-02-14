@@ -1,13 +1,13 @@
 {
   "domain": "fritzbox_callmonitor_raw",
   "name": "FRITZ!Box CallMonitor (Raw + TR-064)",
-  "version": "1.0.0",
+  "codeowners": ["@Sanji78"],
+  "config_flow": true,
   "documentation": "https://github.com/Sanji78/fritzbox_callmonitor_raw",
   "issue_tracker": "https://github.com/Sanji78/fritzbox_callmonitor_raw/issues",
-  "config_flow": true,
   "integration_type": "device",
   "iot_class": "local_push",
+  "loggers": [],
   "requirements": [],
-  "codeowners": [],
-  "loggers": []
+  "version": "1.0.1"
 }
