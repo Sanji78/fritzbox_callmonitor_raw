@@ -4,9 +4,9 @@
   "codeowners": ["@Sanji78"],
   "config_flow": true,
   "documentation": "https://github.com/Sanji78/fritzbox_callmonitor_raw",
-  "issue_tracker": "https://github.com/Sanji78/fritzbox_callmonitor_raw/issues",
-  "integration_type": "device",
   "iot_class": "local_push",
+  "integration_type": "device",
+  "issue_tracker": "https://github.com/Sanji78/fritzbox_callmonitor_raw/issues",
   "loggers": [],
   "requirements": [],
   "version": "1.0.1"
